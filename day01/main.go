@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	values := utils.FileInt("day01/day01.txt", "\r\n")
+	values := utils.FileInt("day01/input.txt", "\r\n")
 
 	fmt.Printf("Solution part one: %d\n", CalculateExpenseOfTwoEntries(values))
 	fmt.Printf("Solution part two: %d\n", CalculateExpenseOfThreeEntries(values))
