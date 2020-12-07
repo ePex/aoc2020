@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestCalculateExpenseOfTwoEntries(t *testing.T) {
+func TestCalculateNumberOfValidPasswordsSledPolicy(t *testing.T) {
 	actual := CalculateNumberOfValidPasswordsSledPolicy([]string{"1-3 a: abcde", "1-3 b: cdefg", "2-9 c: ccccccccc"})
 
 	assert.Equal(t, 2, actual)
