@@ -1,18 +1,30 @@
 package utils
 
 import (
-	"io/ioutil"
-	"strings"
+	"bufio"
+	"log"
+	"os"
 )
 
-func FileInt(filePath string, separator string) (values []int) {
-	return ToIntArray(FileString(filePath, separator))
+func FileInt(filePath string) (values []int) {
+	return ToIntArray(FileString(filePath))
 }
 
-func FileString(filePath string, separator string) (values []string) {
-	bytes, _ := ioutil.ReadFile(filePath)
+func FileString(filePath string) (values []string) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
 
-	str := string(bytes)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		values = append(values, scanner.Text())
+	}
 
-	return strings.Split(str, separator)
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return values
 }

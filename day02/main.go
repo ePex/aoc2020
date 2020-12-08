@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	values := utils.FileString("day02/input.txt", "\r\n")
+	values := utils.FileString("day02/input.txt")
 
 	fmt.Printf("Solution part one: %d\n", CalculateNumberOfValidPasswordsSledPolicy(values))
 	fmt.Printf("Solution part two: %d\n", CalculateNumberOfValidPasswordsTobogganPolicy(values))
