@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-	utils.FileString("day05/input.txt")
+	values := utils.FileString("day05/input.txt")
 
-	fmt.Printf("Solution part one: %d\n", -1)
+	fmt.Printf("Solution part one: %d\n", GetHighestSeatId(values))
 	fmt.Printf("Solution part two: %d\n", -1)
 }
