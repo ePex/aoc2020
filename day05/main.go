@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-	values := utils.FileString("day05/input.txt")
+	utils.FileString("day05/input.txt")
 
-	fmt.Printf("Solution part one: %d\n", values)
-	fmt.Printf("Solution part two: %d\n", values)
+	fmt.Printf("Solution part one: %d\n", -1)
+	fmt.Printf("Solution part two: %d\n", -1)
 }
