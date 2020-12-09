@@ -10,7 +10,7 @@ func TestWithOneGroup(t *testing.T) {
 		"abcx",
 		"abcy",
 		"abcz",
-	}))
+	}, false))
 }
 
 func TestWithMultipleGroups(t *testing.T) {
@@ -30,7 +30,7 @@ func TestWithMultipleGroups(t *testing.T) {
 		"a",
 		"",
 		"b",
-	}))
+	}, false))
 }
 
 func TestWithMultipleGroups2(t *testing.T) {
@@ -48,5 +48,25 @@ func TestWithMultipleGroups2(t *testing.T) {
 		"vmq",
 		"bvmrq",
 		"ifmqxagvu",
-	}))
+	}, false))
+}
+
+func TestPartTwoWithMultipleGroups(t *testing.T) {
+	assert.Equal(t, 6, CalculateYesCount([]string{
+		"abc",
+		"",
+		"a",
+		"b",
+		"c",
+		"",
+		"ab",
+		"ac",
+		"",
+		"a",
+		"a",
+		"a",
+		"a",
+		"",
+		"b",
+	}, true))
 }
