@@ -1,11 +1,12 @@
 package main
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
 )
 
-type passport struct {
+type Passport struct {
 	raw string
 	byr int    // (Birth Year)
 	iyr int    // (Issue Year)
@@ -17,9 +18,23 @@ type passport struct {
 	cid int    // (Country ID) - optional
 }
 
+func ValidatePassportBatchWithValidationRules(batch []string) (count int) {
+	for _, record := range parseBatch(batch) {
+		passport := Passport{}
+		passport.fillWithData(record)
+		if passport.mandatoryFieldsSet() && passport.valid() {
+			count++
+		}
+	}
+
+	return count
+}
+
 func ValidatePassportBatch(batch []string) (count int) {
 	for _, record := range parseBatch(batch) {
-		if passportValid(mapRecordToPassport(record)) {
+		passport := Passport{}
+		passport.fillWithData(record)
+		if passport.mandatoryFieldsSet() {
 			count++
 		}
 	}
@@ -42,9 +57,7 @@ func parseBatch(batch []string) (data []string) {
 	return data
 }
 
-func mapRecordToPassport(record string) passport {
-	passport := passport{}
-
+func (p *Passport) fillWithData(record string) {
 	entries := strings.Split(record, " ")
 	m := make(map[string]string)
 	for _, e := range entries {
@@ -52,25 +65,60 @@ func mapRecordToPassport(record string) passport {
 		m[parts[0]] = parts[1]
 	}
 
-	passport.raw = record
-	passport.byr, _ = strconv.Atoi(m["byr"])
-	passport.iyr, _ = strconv.Atoi(m["iyr"])
-	passport.eyr, _ = strconv.Atoi(m["eyr"])
-	passport.hgt, _ = m["hgt"]
-	passport.hcl, _ = m["hcl"]
-	passport.ecl, _ = m["ecl"]
-	passport.pid, _ = m["pid"]
-	passport.cid, _ = strconv.Atoi(m["cid"])
-
-	return passport
+	p.raw = record
+	p.byr, _ = strconv.Atoi(m["byr"])
+	p.iyr, _ = strconv.Atoi(m["iyr"])
+	p.eyr, _ = strconv.Atoi(m["eyr"])
+	p.hgt, _ = m["hgt"]
+	p.hcl, _ = m["hcl"]
+	p.ecl, _ = m["ecl"]
+	p.pid, _ = m["pid"]
+	p.cid, _ = strconv.Atoi(m["cid"])
 }
 
-func passportValid(passport passport) bool {
-	return passport.byr > 0 &&
-		passport.iyr > 0 &&
-		passport.eyr > 0 &&
-		len(passport.hgt) > 0 &&
-		len(passport.hcl) > 0 &&
-		len(passport.ecl) > 0 &&
-		len(passport.pid) > 0
+func (p *Passport) mandatoryFieldsSet() bool {
+	return p.byr > 0 &&
+		p.iyr > 0 &&
+		p.eyr > 0 &&
+		len(p.hgt) > 0 &&
+		len(p.hcl) > 0 &&
+		len(p.ecl) > 0 &&
+		len(p.pid) > 0
 }
+
+func (p *Passport) valid() bool {
+	return isValueInRange(p.byr, 1920, 2002) &&
+		isValueInRange(p.iyr, 2010, 2020) &&
+		isValueInRange(p.eyr, 2020, 2030) &&
+		isHeightValid(p.hgt) &&
+		hclCheck.MatchString(p.hcl) &&
+		eclCheck.MatchString(p.ecl) &&
+		pidCheck.MatchString(p.pid)
+}
+
+func isHeightValid(height string) bool {
+	heightValue, _ := strconv.Atoi(height[:len(height)-2])
+
+	switch height[len(height)-2:] {
+	case "cm":
+		if !isValueInRange(heightValue, 150, 193) {
+			return false
+		}
+	case "in":
+		if !isValueInRange(heightValue, 59, 76) {
+			return false
+		}
+	default:
+		return false
+	}
+
+	return true
+}
+
+func isValueInRange(value, min, max int) bool {
+	return value >= min && value <= max
+}
+
+var hclCheck = regexp.MustCompile(`^#[0-9a-f]{6}$`)
+var eclCheck = regexp.MustCompile(`^amb$|^blu$|^brn$|^gry$|^grn$|^hzl$|^oth$`)
+var pidCheck = regexp.MustCompile(`^\d{9}$`)
